@@ -1,0 +1,32 @@
+/**:
+  ros__parameters:
+    use_sim_time: false # [bool] Hardware only; encoder/IMU capture stamps drive integration.
+    encoder_topic: /wheel_encoders # [topic] sensor_msgs/JointState, best effort.
+    imu_topic: /imu # [topic] sensor_msgs/Imu, best effort, angular_velocity.z.
+    odom_topic: /odom # [topic] nav_msgs/Odometry.
+    odom_frame: odom # REP 105 parent; SLAM/AMCL owns map -> odom.
+    base_frame: base_footprint # Sole root of hardware model.urdf.
+    imu_frame: base_imu_link # Hardware URDF has zero rotation to base_footprint, Z up.
+    left_joint: left_up_wheel_link_joint # Cumulative driver position, NOT radians; see encoder_distance_scale.
+    right_joint: right_up_wheel_link_joint # Cumulative driver position, NOT radians; see encoder_distance_scale.
+    wheel_radius: 0.04 # [m] Hardware wheel radius.
+    encoder_distance_scale: 0.01 # [m/cm] MEASURED: distance_m = position * wheel_radius / 100; driver receives integer cm. Both sides increase forward.
+    velocity_window: 0.25 # PROVISIONAL [s] Requested ~0.25 s trailing displacement window for 1 cm quantisation at ~20 Hz; pose still integrates each delta.
+    effective_track: 0.38 # PROVISIONAL [m] Measured skid-steer value; stale-IMU fallback ONLY, replaces earlier .21701 estimate.
+    bias_duration: 2.0 # [s] User decision: initial continuous stationary gyro calibration.
+    stationary_bias_duration: 0.5 # [s] User decision: refresh bias after strictly longer than this with no encoder change.
+    stationary_bias_min_samples: 5 # PROVISIONAL [IMU samples] Support required in trailing .5 s refresh window.
+    stationary_wheel_speed: 0.005 # PROVISIONAL [m/s per wheel] Reject moving calibration intervals, including in-place turns.
+    stationary_gyro_limit: 0.15 # PROVISIONAL [rad/s raw] Reject obvious body rotation during calibration.
+    bias_min_samples: 20 # PROVISIONAL [IMU samples] Minimum support, in addition to full 2 s duration.
+    imu_stale_timeout: 0.2 # PROVISIONAL [s] Capture-age limit; beyond this use encoder differential yaw.
+    max_encoder_interval: 0.5 # PROVISIONAL [s] Rebase after long gaps, never infer a long unobserved trajectory.
+    max_wheel_speed: 2.0 # PROVISIONAL [m/s per wheel] Reject/reset discontinuities above hardware operating range.
+    imu_history_size: 200 # PROVISIONAL [samples] Bounded history for encoder/IMU callback ordering.
+    output_queue: 10 # PROVISIONAL [messages] Reliable odometry output queue.
+    log_period: 2.0 # PROVISIONAL [s wall] Repeated rejected-input log throttle.
+    pose_variance: [0.0001, 0.0001, 1000000.0, 1000000.0, 1000000.0, 0.0004] # PROVISIONAL [m^2 x/y/z, rad^2 roll/pitch/yaw] Initial diagonal, not measured uncertainty.
+    pose_variance_rate: [0.0004, 0.0004, 0.0, 0.0, 0.0, 0.0001] # PROVISIONAL [m^2/s, rad^2/s] Dead-reckoning growth; no calibrated covariance claim.
+    twist_variance: [0.0025, 0.01, 1000000.0, 1000000.0, 1000000.0, 0.0001] # PROVISIONAL [(m/s)^2 x/y/z, (rad/s)^2 roll/pitch/yaw] Gyro-backed velocity diagonal.
+    fallback_yaw_variance: 0.04 # PROVISIONAL [(rad/s)^2] Encoder yaw under skid-steer slip.
+    fallback_yaw_variance_rate: 0.01 # PROVISIONAL [rad^2/s] Larger heading drift during fallback.

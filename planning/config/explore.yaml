@@ -1,0 +1,15 @@
+/**:
+  ros__parameters:
+    use_sim_time: true
+    robot_base_frame: base_footprint
+    return_to_init: false # Continue dock validation after frontier exploration.
+    costmap_topic: /map # slam_toolbox sensor map; no simulator truth.
+    costmap_updates_topic: /map_updates
+    visualize: true
+    planner_frequency: 0.15 # [Hz wall] Upstream sample; progress_timeout uses ROS sim clock.
+    progress_timeout: 30.0 # [s sim] Upstream sample, PROVISIONAL here.
+    potential_scale: 3.0 # [cost/m] Upstream sample, PROVISIONAL frontier distance weight.
+    orientation_scale: 0.0 # [cost/rad] Upstream sample (unused in upstream search).
+    gain_scale: 1.0 # [cost/m frontier] Upstream sample, PROVISIONAL information weight.
+    transform_tolerance: 0.3 # [s] Upstream sample, PROVISIONAL TF age allowance.
+    min_frontier_size: 0.75 # [m] Upstream sample, PROVISIONAL minimum frontier length.

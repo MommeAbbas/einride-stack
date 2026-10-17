@@ -1,0 +1,45 @@
+# Full upstream RGBD configuration plus driver-supported host-clock conversion.
+# Regenerate only after reviewing upstream camera calibration changes.
+# rgb/stereo i_get_base_device_timestamp=false selects host-synchronised timestamps;
+# i_update_ros_base_time_on_ros_msg=true refreshes ROS/steady-clock mapping.
+/oak:
+  ros__parameters:
+    camera:
+      i_enable_imu: true
+      i_pipeline_type: RGBD
+      i_enable_ir: false
+      i_nn_type: none
+      i_publish_tf_from_calibration: true
+      i_tf_base_frame: oak
+      i_tf_parent_frame: base_link
+      i_tf_imu_from_descr: 'true'
+    pipeline_gen:
+      i_enable_imu: true
+    rgb:
+      i_resolution: 1080P
+      i_width: 1280
+      i_height: 720
+      i_fps: 30.0
+      i_get_base_device_timestamp: false
+      i_update_ros_base_time_on_ros_msg: true
+    left:
+      i_publish_topic: false
+    right:
+      i_publish_topic: false
+    stereo:
+      i_resolution: 480P
+      i_align_depth: true
+      i_width: 1280
+      i_height: 720
+      i_fps: 30.0
+      i_subpixel: true
+      i_depth_preset: ROBOTICS
+      i_depth_filter_size: 7
+      i_stereo_conf_threshold: 245
+      i_get_base_device_timestamp: false
+      i_update_ros_base_time_on_ros_msg: true
+    imu:
+      i_acc_freq: 100
+      i_gyro_freq: 100
+      i_message_type: IMU
+    use_sim_time: false

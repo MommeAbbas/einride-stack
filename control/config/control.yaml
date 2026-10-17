@@ -1,0 +1,218 @@
+# PROVISIONAL simulation tuning; validate hardware stopping, slip and camera blur separately.
+/**:
+  ros__parameters:
+    navigation_slow_distance: 0.45 # PROVISIONAL [m] Limit approaching Nav2 goal to executable minimum speed.
+    docking_stage_timeout: 180.0 # PROVISIONAL [s ROS] Persistent Nav2 staging budget per docking attempt.
+    docking_spin_timeout: 30.0 # PROVISIONAL [s ROS] Installed Spin alignment allowance before live detection.
+    opennav_docking: false # [bool] Hardware uses installed DockRobot/UndockRobot; legacy sim path unchanged.
+    use_sim_time: true
+    direct_forward_limit: 0.26 # PROVISIONAL [m/s] Hardware map/dock command cap, matches measured-response MPPI cap.
+    linear_compensation_threshold: 0.02 # PROVISIONAL [m/s] Hardware only; strict lower boost threshold.
+    angular_compensation_threshold: 0.05 # PROVISIONAL [rad/s] Hardware only; strict lower in-place boost threshold.
+    hardware_mapping_passthrough: false # [bool] Hardware mapping owns Nav2 until mapping_complete; mission remains held.
+    navigation_retry_period: 1.0 # PROVISIONAL [s ROS] Retry active goal after Nav2 abort/rejection.
+    navigation_watch_period: 0.1 # PROVISIONAL [s ROS] Action relay cancellation and retry check.
+    hardware_minimum_commands: false # [bool] Enabled only by measured hardware overlay.
+    minimum_linear_command: 0.15 # PROVISIONAL [m/s] Hardware floor when enabled, zero preserved.
+    minimum_angular_command: 0.8 # PROVISIONAL [rad/s] Hardware floor when enabled, zero preserved.
+    reverse_speed_limit: 0.10 # [m/s] Preserve existing BackUp cap even when the installed BT requests 0.15.
+    navigation_turn_limit: 0.8 # [rad/s] Existing navigation command cap.
+    coordinator_rate: 30.0 # [Hz sim] Control baseline, measure cycle budget.
+    require_predictions: true # [bool] E1/E2 explicitly disable before perception joins.
+    prediction_stale_timeout: 1.2 # PROVISIONAL [s sim] Match output/transport budget.
+    mppi_horizon: 2.8 # [s sim] Installed MPPI default 56 * 0.05; consumer coverage requirement.
+    stopped_speed: 0.025 # PROVISIONAL [m/s] Measured stop confirmation.
+    stopped_turn_rate: 0.04 # PROVISIONAL [rad/s] Measured stop confirmation.
+    heading_tolerance: 0.06 # PROVISIONAL [rad] LOOK final heading acceptance.
+    look_turn_rate: 0.2 # PROVISIONAL [rad/s] Below perception usable-turn threshold.
+    look_gain: 1.0 # PROVISIONAL [1/s] Turn error gain; validate settling.
+    look_timeout_limit: 20.0 # PROVISIONAL [s sim] Hard execution deadline.
+    camera_yaw_offset: 0.0 # [rad] Model forward camera mounting; check calibrated TF before hardware.
+    odom_stale_timeout: 0.3 # PROVISIONAL [s sim] Missing feedback forces hold.
+    pose_stale_timeout: 0.3 # PROVISIONAL [s sim] Reject stale common map/base TF even when odometry is fresh.
+    command_timeout: 0.2 # PROVISIONAL [s sim] Missing MPPI output forces zero.
+    qos_depth: 10 # PROVISIONAL [messages] Path/request pairing buffer.
+    depth_topic: /oak/stereo/image_raw # Raw simulation depth, independent of belief.
+    depth_rate: 10.0 # PROVISIONAL [Hz sim] Guard input cadence; measure worst-case gap.
+    depth_pixel_stride: 8 # PROVISIONAL [pixels] Angular sampling, validate smallest obstacle coverage.
+    depth_min: 0.05 # PROVISIONAL [m] Preserve close obstacles in simulator data.
+    depth_max: 8.0 # PROVISIONAL [m] Projection range; guard operates near footprint.
+controller_server:
+  ros__parameters:
+    enable_stamped_cmd_vel: false # Existing platform Twist contract.
+    controller_plugins: [FollowPath]
+    goal_checker_plugins: [goal_checker]
+    goal_checker:
+      plugin: nav2_controller::SimpleGoalChecker
+      xy_goal_tolerance: 0.07 # [m] Existing dock/organiser completion contract, unchanged.
+      yaw_goal_tolerance: 0.10 # [rad] Existing tag-facing completion contract, unchanged.
+    FollowPath:
+      plugin: nav2_rotation_shim_controller::RotationShimController
+      primary_controller: nav2_mppi_controller::MPPIController # Installed package; MPPI and prediction critic retained.
+      closed_loop: false # PROVISIONAL [bool] Ramp shim command independently of downstream slowdown; guard remains final.
+      rotate_to_goal_heading: true # Finish heading after reaching the unchanged position tolerance.
+      rotate_to_heading_angular_vel: 0.8 # [rad/s] Existing navigation cap; upstream 1.8 would exceed it.
+      max_angular_accel: 1.5 # [rad/s^2] Existing angular acceleration cap.
+      GoalAngleCritic:
+        threshold_to_consider: 0.07 # PROVISIONAL [m] Match goal-checker position tolerance; avoid premature final-yaw stalls.
+      motion_model: DiffDrive
+      vx_max: 0.4 # [m/s] Existing physical speed cap, unchanged.
+      vx_min: 0.0 # [m/s] Existing forward-only MPPI; standard BackUp handles reverse.
+      vy_max: 0.0 # [m/s] Differential drive.
+      wz_max: 0.8 # [rad/s] Existing angular speed cap.
+      ax_max: 0.8 # [m/s²] Existing acceleration limits, unchanged.
+      ax_min: -0.8 # [m/s²] Existing braking limit.
+      az_max: 1.5 # [rad/s²] Existing angular acceleration limit.
+      critics: [ConstraintCritic, CostCritic, GoalCritic, GoalAngleCritic, PathAlignCritic, PathFollowCritic, PathAngleCritic, PreferForwardCritic, PredictionCritic]
+      CostCritic:
+        consider_footprint: true # Existing complete footprint collision scoring.
+      PredictionCritic:
+        enabled: false # Evaluation selected variant a after fewer ego/moving-command contacts.
+        require_predictions: true
+        cost_weight: 8.0 # PROVISIONAL [cost scale] Existing custom critic weight; no Nav2 default exists.
+        robot_radius: 0.168 # [m] Existing footprint envelope.
+        safety_margin: 0.2 # PROVISIONAL [m] Existing prediction-critic margin.
+        stale_timeout: 1.2 # PROVISIONAL [s sim] Existing prediction validity budget.
+        epsilon: 0.000001 # [numeric tolerance] Existing covariance/mass validation.
+      # Other MPPI/controller/progress-checker settings use installed Nav2 defaults.
+local_costmap:
+  local_costmap:
+    ros__parameters:
+      use_sim_time: true
+      global_frame: odom
+      robot_base_frame: base_footprint
+      rolling_window: true
+      width: 4 # PROVISIONAL [m] Horizon coverage.
+      height: 4 # PROVISIONAL [m] Horizon coverage.
+      resolution: 0.04 # PROVISIONAL [m/cell] Match planning resolution initially.
+      update_frequency: 10.0 # PROVISIONAL [Hz sim] Measure dynamic obstacle update lag.
+      publish_frequency: 2.0 # PROVISIONAL [Hz sim] Viewer bandwidth.
+      robot_radius: 0.168 # [m] Circumscribed envelope for consumers.
+      footprint: "[[0.1225,0.115],[0.1225,-0.115],[-0.1225,-0.115],[-0.1225,0.115]]" # [m] Model nominal rectangle.
+      footprint_padding: 0.01 # PROVISIONAL [m] Additional static margin.
+      plugins: [obstacle_layer, inflation_layer]
+      obstacle_layer:
+        plugin: nav2_costmap_2d::ObstacleLayer
+        enabled: true
+        observation_sources: scan depth depth_clearing # Separate marking/clearing buffers preserve observed floor rays.
+        depth_clearing:
+          topic: /control/depth_points
+          data_type: PointCloud2
+          marking: false # Floor observations may clear old cells, NEVER mark them.
+          clearing: true
+          min_obstacle_height: -0.05 # PROVISIONAL [m] Accept noisy floor endpoints for raytrace clearing only.
+          max_obstacle_height: 0.50 # PROVISIONAL [m] Same observed vertical extent.
+          raytrace_max_range: 4.0 # PROVISIONAL [m] Unchanged sensor clearing range.
+        depth:
+          topic: /control/depth_points
+          data_type: PointCloud2
+          clearing: true
+          marking: true
+          min_obstacle_height: 0.04 # PROVISIONAL [m] Same floor exclusion as collision monitor.
+          max_obstacle_height: 0.50 # PROVISIONAL [m] Same height cap as collision monitor.
+          obstacle_max_range: 3.0 # PROVISIONAL [m] Match existing lidar obstacle range.
+          raytrace_max_range: 4.0 # PROVISIONAL [m] Match existing clearing range.
+        scan:
+          topic: /scan
+          data_type: LaserScan
+          clearing: true
+          marking: true
+          obstacle_max_range: 3.0 # PROVISIONAL [m] Local costmap range.
+          raytrace_max_range: 4.0 # PROVISIONAL [m] Clear only observed beams.
+          inf_is_valid: false
+
+      inflation_layer:
+        plugin: nav2_costmap_2d::InflationLayer
+        inflation_radius: 0.3 # PROVISIONAL [m] Static clearance cost.
+        cost_scaling_factor: 6.0 # PROVISIONAL [1/m] Cost falloff.
+collision_monitor:
+  ros__parameters:
+    base_frame_id: base_footprint
+    odom_frame_id: odom
+    cmd_vel_in_topic: /control/guard_input
+    cmd_vel_out_topic: /cmd_vel
+    state_topic: /control/collision_state
+    enable_stamped_cmd_vel: false
+    transform_tolerance: 0.2 # PROVISIONAL [s] Sensor TF wait tolerance.
+    source_timeout: 0.5 # PROVISIONAL [s sim] Sensor loss forces stop.
+    stop_pub_timeout: 2.0 # PROVISIONAL [s sim] Continue zero after stopping.
+    polygons: [Approach, Slow]
+    Approach:
+      type: polygon
+      action_type: approach
+      footprint_topic: /local_costmap/published_footprint # Existing padded local-costmap footprint, unchanged.
+      time_before_collision: 1.2 # PROVISIONAL [s] Simulation collision-prediction horizon.
+      min_points: 1 # [points] Existing guard threshold, unchanged.
+      visualize: true
+      polygon_pub_topic: /control/stop_polygon # Preserve the existing visualization topic.
+      # Integration step uses installed Nav2 default simulation_time_step.
+    Slow:
+      type: velocity_polygon
+      action_type: slowdown
+      min_points: 1 # [points] Unchanged guard threshold.
+      holonomic: false
+      visualize: true
+      polygon_pub_topic: /control/slow_polygon
+      velocity_polygons: [forward, reverse, rotation_or_rest]
+      slowdown_ratio: 0.3 # [fraction] Unchanged.
+      forward:
+        points: '[[0.494,0.24],[0.494,-0.24],[-0.126,-0.24],[-0.126,0.24]]' # PROVISIONAL [m] Full original 0.62 m x 0.48 m zone; translated, never shrunk.
+        linear_min: 0.001 # [m/s] Selection bound, not an increased command limit.
+        linear_max: 0.4 # [m/s] Covers existing command bounds.
+        theta_min: -0.04 # PROVISIONAL [rad/s] Only near-straight travel uses a directional zone.
+        theta_max: 0.04 # PROVISIONAL [rad/s] Rotations retain original full zone.
+      reverse:
+        points: '[[0.126,0.24],[0.126,-0.24],[-0.494,-0.24],[-0.494,0.24]]' # PROVISIONAL [m] Full original 0.62 m x 0.48 m zone; translated, never shrunk.
+        linear_min: -0.4 # [m/s] Selection bound, not an increased command limit.
+        linear_max: -0.001 # [m/s] Covers existing command bounds.
+        theta_min: -0.04 # PROVISIONAL [rad/s] Only near-straight travel uses a directional zone.
+        theta_max: 0.04 # PROVISIONAL [rad/s] Rotations retain original full zone.
+      rotation_or_rest:
+        points: '[[0.4,0.24],[0.4,-0.24],[-0.22,-0.24],[-0.22,0.24]]' # PROVISIONAL [m] Full original 0.62 m x 0.48 m zone; translated, never shrunk.
+        linear_min: -0.4 # [m/s] Selection bound, not an increased command limit.
+        linear_max: 0.4 # [m/s] Covers existing command bounds.
+        theta_min: -0.8 # PROVISIONAL [rad/s] Only near-straight travel uses a directional zone.
+        theta_max: 0.8 # PROVISIONAL [rad/s] Rotations retain original full zone.
+    observation_sources: [scan, depth]
+    scan: {type: scan, topic: /scan}
+    depth:
+      type: pointcloud
+      topic: /control/depth_points
+      min_height: 0.04 # PROVISIONAL [m] Floor rejection; validate short obstacles.
+      max_height: 0.5 # PROVISIONAL [m] Keep relevant obstacles.
+
+behavior_server:
+  ros__parameters:
+    use_sim_time: true
+    enable_stamped_cmd_vel: false # Jazzy Twist command interface.
+    local_costmap_topic: /local_costmap/costmap_raw
+    global_costmap_topic: /global_costmap/costmap_raw
+    local_footprint_topic: /local_costmap/published_footprint
+    global_footprint_topic: /global_costmap/published_footprint
+    local_frame: odom
+    global_frame: map
+    robot_base_frame: base_footprint
+    transform_tolerance: 0.2 # PROVISIONAL [s] Same TF budget as controller.
+    cycle_frequency: 10.0 # PROVISIONAL [Hz sim] Recovery action cadence.
+    behavior_plugins: [wait, backup, spin]
+    spin:
+      plugin: nav2_behaviors::Spin
+    max_rotational_vel: 0.8 # [rad/s] Existing navigation turn cap, LOOK adapter caps at 0.2.
+    rotational_acc_lim: 1.5 # [rad/s²] Existing motion limit.
+    wait:
+      plugin: nav2_behaviors::Wait
+    backup:
+      plugin: nav2_behaviors::BackUp
+    simulate_ahead_time: 2.0 # PROVISIONAL [s] BackUp local-costmap collision preview, always enabled in Jazzy.
+
+bt_navigator:
+  ros__parameters:
+    use_sim_time: true
+    global_frame: map
+    robot_base_frame: base_footprint
+    odom_topic: /odom
+    navigators: [navigate_to_pose]
+    navigate_to_pose:
+      plugin: nav2_bt_navigator::NavigateToPoseNavigator
+    # Default installed navigate_to_pose_w_replanning_and_recovery.xml, unchanged.
+    # BT loop/action deadlines and recovery values use installed Nav2 defaults.

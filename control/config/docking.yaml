@@ -1,0 +1,41 @@
+docking_server:
+  ros__parameters:
+    use_sim_time: false
+    enable_stamped_cmd_vel: false
+    base_frame: base_footprint
+    fixed_frame: odom
+    controller_frequency: 20.0 # PROVISIONAL [Hz] Below installed 50Hz default for Jetson.
+    initial_perception_timeout: 5.0 # [s] Installed default.
+    dock_approach_timeout: 30.0 # [s] Installed default.
+    dock_prestaging_tolerance: 0.12 # [m] Selected staging position tolerance.
+    undock_linear_tolerance: 0.05 # [m] Installed default.
+    undock_angular_tolerance: 0.05 # [rad] Installed default.
+    max_retries: 3 # [attempts] Installed default.
+    controller:
+      k_phi: 6.0 # PROVISIONAL [gain] Installed3 left .060rad error at target; increase orientation convergence.
+      v_linear_min: 0.15 # PROVISIONAL [m/s command] Floor measured executable minimum.
+      v_linear_max: 0.15 # PROVISIONAL [m/s command] Final docking is minimum-speed only.
+      v_angular_max: 0.8 # [rad/s command] Existing cap.
+      use_collision_detection: true
+      dock_collision_threshold: 0.3 # [m] Installed docking default: omit known dock final segment from internal costmap projection; native collision_monitor Stop/Approach stay active.
+      transform_tolerance: 1.0 # PROVISIONAL [s] Match other hardware Nav2 consumers.
+      projection_time: 0.6 # PROVISIONAL [s] Match final guard horizon; default5s projects beyond non-contact wall goal.
+      costmap_topic: /local_costmap/costmap_raw
+      footprint_topic: /local_costmap/published_footprint
+
+# Template expanded for each of eight dock IDs; all are ROS plugin parameters.
+dock_template:
+  ros__parameters:
+    plugin: control::TagDock
+    use_external_detection_pose: true
+    external_detection_timeout: 1.0 # PROVISIONAL [s] Same installed default; stale camera fails docking.
+    external_detection_translation_y: 0.0 # [m] Tag is dock centreline.
+    external_detection_rotation_yaw: 0.0 # [rad] SLAM publishes planar inward dock orientation.
+    external_detection_rotation_pitch: 0.0 # [rad] Already planar.
+    external_detection_rotation_roll: 0.0 # [rad] Already planar.
+    staging_yaw_offset: 0.0 # [rad] Dock alignment shares inward axis.
+    docking_threshold: 0.005 # PROVISIONAL [m] Longitudinal tolerance in the docking plugin; lateral bound is separate, not a radius.
+    heading_tolerance: 0.05 # [rad] Acceptance threshold.
+    lateral_tolerance: 0.03 # [m] Acceptance threshold.
+    filter_coef: 0.1 # [fraction] Installed detector pose filter default.
+    use_stall_detection: false # Non-contact dock.

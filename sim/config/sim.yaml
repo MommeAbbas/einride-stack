@@ -1,0 +1,120 @@
+# All unmeasured settings are PROVISIONAL. SI units. Tune against simulation checks.
+/**:
+  ros__parameters:
+    ego_camera_width: 0 # [px] 0 inherits upstream; private evaluation override only.
+    ego_camera_height: 360 # [px] paired with explicit width override.
+    ego_camera_rate: 5.0 # [Hz sim] competition camera rate, evaluation only.
+    use_sim_time: true # [bool] Required for all simulation nodes.
+    traffic_count: 3 # [count] Scenario input, 0..3; validate launch coverage.
+    route_seed: 7 # [integer] Scenario-controlled deterministic Saga seed.
+    traffic_modes: [ignore, ignore, ignore] # Per robot: ignore/stop_near/random_wander/yield.
+    traffic_spawns: [0.8, -0.8, 0.0, -0.8, -1.6, 1.57, 0.8, 1.6, -1.57] # PROVISIONAL [m,m,rad] triples; verify free spawn cells.
+    run_dir: /tmp/sim_run # Runtime generated world/map; runner supplies unique directory.
+    saga_url: http://127.0.0.1:8000 # Local simulation server only.
+    saga_source: '' # Source path supplied by runner; no modifications there.
+    saga_poll_period: 0.5 # PROVISIONAL [s sim] Measure organiser/traffic response latency.
+    saga_stale_timeout: 2.0 # PROVISIONAL [s sim] Hold traffic if route polling stops; validate network-drop test.
+    http_timeout: 0.5 # PROVISIONAL [s wall] Bound API calls; test unresponsive server.
+    dwell_seconds: 3.0 # [s sim] Saga minimum, must ALSO satisfy wall lock.
+    wall_lock_seconds: 3.0 # [s wall] Saga lock; server remains final authority.
+    arrival_tolerance: 0.14 # PROVISIONAL [m] True center to dock goal; validate dock placement.
+    stopped_speed: 0.04 # PROVISIONAL [m/s] Arrival/dwell true translation tolerance; measure settling.
+    stopped_turn_rate: 0.10 # PROVISIONAL [rad/s] Arrival/dwell rotation tolerance; measure settling.
+    pose_stale_timeout: 0.3 # PROVISIONAL [s sim] Reject old truth; measure bridge lag.
+    truth_rate: 30.0 # PROVISIONAL [Hz sim] Ground-truth output; benchmark sampling adequacy.
+    truth_jump_speed: 5.0 # PROVISIONAL [m/s] Reject teleport velocity; exceeds robot physical speed.
+    control_rate: 20.0 # PROVISIONAL [Hz sim] Traffic driver rate; measure path tracking.
+    traffic_speed: 0.40 # PROVISIONAL [m/s] Traffic cruise; tune on sim route completion.
+    traffic_max_turn_rate: 1.2 # PROVISIONAL [rad/s] Traffic turn cap; measure skid tracking.
+    heading_gain: 2.5 # PROVISIONAL [1/s] Heading P gain; tune tracking error.
+    turn_in_place_angle: 0.55 # PROVISIONAL [rad] Stop translation beyond heading error; validate corners.
+    waypoint_tolerance: 0.08 # PROVISIONAL [m] Waypoint acceptance; check no corner cuts.
+    goal_tolerance: 0.08 # PROVISIONAL [m] Traffic stopping distance; below organiser tolerance.
+    stop_near_distance: 0.6 # PROVISIONAL [m center distance] stop_near only; compare ablation.
+    wander_dwell: 3.0 # PROVISIONAL [s sim] Random wander pause; does not advance unrelated Saga routes.
+    collision_footprint_length: 0.252 # [m] Symmetric cover of model wheel extrema x=-0.12504/+0.12596.
+    collision_footprint_width: 0.232 # [m] Covers body STL y=+/-0.11521, rounded outward.
+    traffic_yield_distance: 0.35 # PROVISIONAL [m centre distance] Configured ahead stop threshold.
+    traffic_yield_half_angle: 1.5707963267948966 # PROVISIONAL [rad] Forward half-plane, no response to robots behind.
+    robot_length: 0.245 # [m] simulator model nominal footprint; review measured outline.
+    robot_width: 0.230 # [m] simulator model nominal footprint; review measured outline.
+    robot_height: 0.177 # [m] Audited full mesh maximum including lidar; no taller antenna mesh.
+    map_resolution: 0.04 # PROVISIONAL [m/cell] Sim oracle grid; check routing clearance.
+    map_extent: 3.12 # PROVISIONAL [m] Half grid extent; covers documented 6m arena + walls.
+    obstacle_clearance: 0.05 # PROVISIONAL [m] Extra traffic clearance beyond circumscribed radius; check routes.
+    dock_standoff: 0.40 # PROVISIONAL [m] Center offset into arena from dock back; verify fits bay.
+    major_collision_speed: 0.35 # PROVISIONAL [m/s] Relative speed threshold; organiser severity not yet calibrated.
+    collision_release_distance: 0.015 # PROVISIONAL [m] Separation before rearming; check chatter.
+    detector_rate: 10.0 # PROVISIONAL [Hz sim] Frames processed by emulator; benchmark load.
+    detector_miss_rate: 0.05 # PROVISIONAL [probability] Per visible robot/frame; fit real recall later.
+    detector_box_noise: 1.5 # PROVISIONAL [pixel stddev] Independent box corner noise; fit detector residuals.
+    detector_hfov: 1.2191125 # [rad] 69.85 degree camera spec; additionally clipped by CameraInfo/image.
+    detector_vfov: 0.7487462 # [rad] 42.90 degree camera spec.
+    detector_min_range: 0.2 # PROVISIONAL [m optical z] Near plane; validate projection.
+    detector_max_range: 8.0 # PROVISIONAL [m] Usable emulation range; fit real recall.
+    detector_map_occlusion: true # [bool] Static oracle-map ray casting, conservative 2D projection.
+    detector_enabled: true # [bool] Emulator feature switch; external detector source later.
+    detector_source: emulator # [enum] emulator or external; external never silently produces empty frames.
+    detector_history_seconds: 2.0 # PROVISIONAL [s sim] Capture-time true pose history; measure input lag.
+    detector_pose_tolerance: 0.1 # PROVISIONAL [s sim] Maximum truth interpolation bracket gap.
+    depth_topic: /oak/stereo/image_raw # Simulation depth; learned stereo not used.
+    metrics_rate: 1.0 # PROVISIONAL [Hz sim] CSV snapshot rate; align with analysis needs.
+    metric_detection_frame_max_age: 0.5 # PROVISIONAL [s sim] Latest processed camera receipt with >=1 ranged detection labels the prediction frame; otherwise coasting.
+    acceptance_wait_limit: 15.0 # [s sim] E4 continuous-hold acceptance bound.
+    metric_zero_linear_speed: 0.000001 # PROVISIONAL [m/s] Numerical zero for recorded final commands; not a guard threshold.
+    metric_zero_angular_speed: 0.000001 # PROVISIONAL [rad/s] Numerical zero for recorded turns; not a guard threshold.
+    metric_match_tolerance: 0.12 # PROVISIONAL [s sim] Future truth interpolation maximum gap.
+    metric_history_seconds: 6.0 # PROVISIONAL [s sim] Covers 1/2/3 second prediction evaluation.
+    metric_covariance_epsilon: 1.0e-9 # PROVISIONAL [m^2] Numerical regularisation only; report non-PSD as invalid.
+    delivery_points: 200 # [points] Competition rule.
+    minor_penalty: 50 # [points] Competition rule.
+    major_penalty: 100 # [points] Competition rule.
+    duration: 100.0 # PROVISIONAL [s sim] Scenario run length, not a control timeout.
+    repetitions: 1 # [count] Scenario run repetitions.
+    startup_timeout: 60.0 # PROVISIONAL [s wall] Runner readiness deadline, measure laptop startup.
+    run_wall_timeout: 900.0 # PROVISIONAL [s wall] Runner watchdog; never substitutes sim duration.
+    shutdown_timeout: 15.0 # PROVISIONAL [s wall] Clean bag/process flush deadline.
+    saga_port: 8000 # [TCP port] Local scenario server; runner rejects occupied port.
+    discovery_participant_capacity: 64 # PROVISIONAL [DDS participants/domain] Full stack exceeds Jazzy LOCALHOST's 32-peer scan; explicit loopback peers, no subnet discovery.
+    force_collision_at: -1.0 # [s sim from event start] Negative disables test-only teleport.
+    forced_hold_duration: 0.5 # PROVISIONAL [s sim] Test-only overlap observation interval; validate contact receipt.
+    gz_request_timeout: 2.0 # PROVISIONAL [s wall] Test-only set_pose service deadline.
+    scan_sample_seconds: 15.0 # PROVISIONAL [s wall] ros2 topic hz sample duration; report observed rate.
+    expected_cmd_vel_publishers: 0 # [count] Phase 1 has no ego Control; Phase 3 must explicitly expect 1.
+    qos_depth: 10 # PROVISIONAL [messages] Runtime queues; tune against observed sensor/bridge latency.
+    runner_poll_period: 0.1 # PROVISIONAL [s wall] Experiment supervisory polling; measure responsiveness.
+    metric_probability_tolerance: 1.0e-6 # PROVISIONAL [probability] Numerical mass-sum tolerance; validate producer rounding.
+    stack_stage: phase1 # [enum] phase1/E0/E1/E2/E3/E4; Phase 4 intentionally not implemented here.
+    headless: true # [bool] Set false for Gazebo window.
+    foxglove: false # [bool] Local viewer bridge on port below.
+    foxglove_port: 8765 # [TCP port] User-requested ws://localhost:8765.
+    map_source: sensors # [enum] sensors/snapshot/fixture; fixture is evaluation-only.
+    map_snapshot: '' # Path to sensor-built map snapshot; no oracle fallback.
+    event_start_delay: 0.0 # PROVISIONAL [s sim] Delay organiser Start for hold-before-event tests.
+    manual_goal: 0 # [dock ID] E1 hand-supplied dock, ignored in mission stages.
+    record_images: true # [bool] Record compressed annotated camera stream for replay.
+    full_stack_startup_timeout: 120.0 # PROVISIONAL [s wall] Nav2 lifecycle readiness budget.
+    perception_lidar: true # [bool] V1 feature switch.
+    perception_camera_negative: true # [bool] V1 feature switch.
+    perception_lidar_negative: false # [bool] V1 feature switch, off pending measurements.
+    perception_dock_steering: true # [bool] V1 feature switch.
+    perception_injection: true # [bool] V1 feature switch.
+    perception_heavy_tail: true # [bool] V1 feature switch.
+    perception_floor_cue: true # [bool] V1 feature switch.
+    perception_height_cue: true # [bool] V1 feature switch.
+    perception_depth_cue: true # [bool] V1 feature switch.
+    planning_risk: false # V1 configuration: timed-path risk disabled; code retained. # [bool] V1 feature switch; E0-E2 explicitly disable.
+    planning_risk_tolerance: -1.0 # PROVISIONAL [probability; -1 uses Planning config] Stricter E3 branch-coverage override; baseline unchanged.
+    planning_look: true # [bool] V1 feature switch.
+    planning_observation_curves: true # [bool] V1 feature switch.
+    control_prediction_critic: false # [bool] V1 feature switch; E0-E2 explicitly disable.
+    marker_lifetime: 2.0 # PROVISIONAL [s sim] Stale visual expiry.
+    marker_text_height: 0.35 # PROVISIONAL [m] Viewer label lift above robot.
+    marker_text_size: 0.09 # PROVISIONAL [m] Viewer readability.
+    marker_line_width: 0.02 # PROVISIONAL [m] Viewer line thickness.
+    marker_path_height: 0.03 # PROVISIONAL [m] Lift lines off grid.
+    marker_ellipse_stride: 4 # [prediction points] Show 1-second ellipses at dt=.25s.
+    marker_ellipse_points: 32 # PROVISIONAL [segments] Ellipse visual resolution.
+    fixture_approach_offset: 0.3 # PROVISIONAL [m] Phase 2 oracle fixture only; stand back from final docking point.
+    stop_when_map_ready: false # [bool] E0 checks may finish after the sensor-built readiness latch.
+    acceptance_hold_seconds: 2.0 # PROVISIONAL [s sim] Recorded E1 minimum sustained arrival hold.

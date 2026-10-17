@@ -1,0 +1,29 @@
+/**:
+  ros__parameters:
+    escape_rate: 10.0 # PROVISIONAL [Hz] Active sweep/watchdog; scan is ~10Hz.
+    escape_trigger: 5.0 # [s ROS] Configured accumulated held-navigation threshold; preserved across coverage resends.
+    escape_wheel_speed: 0.25 # [m/s] Configured reverse wheel / creep / straight reverse command.
+    escape_track: 0.38 # [m] Measured effective skid track.
+    escape_max_yaw: 1.0471975512 # [rad] 60-degree pivot limit, measured with odometry/gyro.
+    escape_front_half_angle: 0.7853981634 # PROVISIONAL [rad] Front sector +/-45deg; validate on floor.
+    escape_pivot_clearance: 0.35 # [m from footprint] Configured pivot exit threshold.
+    escape_creep_front: 0.5 # [m from footprint] Configured forward-creep admission.
+    escape_clearance: 0.35 # [m from footprint] Configured all-round release threshold.
+    escape_backup_distance: 0.15 # [m] Configured fallback reverse distance, measured from odometry.
+    escape_horizon: 0.5 # [s] Required swept-footprint check, every escape command.
+    escape_step: 0.02 # PROVISIONAL [s] Swept sampling; extra bound covers intersample motion.
+    escape_half_length: 0.12596 # [m] Full model front-wheel extent; symmetric conservative rear.
+    escape_half_width: 0.115 # [m] Existing model half width.
+    escape_margin: 0.01 # PROVISIONAL [m] Lidar/sweep allowance; Stop polygon remains unchanged.
+    escape_scan_timeout: 1.0 # [s] Match collision-monitor source timeout.
+    escape_odom_timeout: 0.5 # PROVISIONAL [s] Fail closed without fresh measured motion.
+    escape_command_timeout: 0.3 # PROVISIONAL [s] Normal source command watchdog, >5Hz coordinator period.
+    escape_heartbeat_timeout: 0.5 # PROVISIONAL [s] Navigation goal/pause lease; fail closed if lost.
+    escape_stall_timeout: 1.0 # PROVISIONAL [s] Measured no-motion during pivot triggers BackUp.
+    escape_motion_linear: 0.02 # PROVISIONAL [m/s] Measured stationary threshold.
+    escape_motion_angular: 0.04 # PROVISIONAL [rad/s] Measured stationary threshold.
+    escape_min_valid_fraction: 0.5 # PROVISIONAL [fraction] Require observed scan coverage; NaNs are unknown.
+    escape_sequence_timeout: 30.0 # PROVISIONAL [s] Bound escape control, then replan/retry if blocked.
+    escape_stop_half_length: 0.1725 # [m] Exact unchanged native Stop rectangle; navigation-only admission sweep.
+    escape_stop_half_width: 0.165 # [m] Exact unchanged native Stop rectangle; no final-docking admission hold.
+    escape_intent_reset_distance: 0.05 # [m] Physical-intent reset: goal replacement alone must retain held time.

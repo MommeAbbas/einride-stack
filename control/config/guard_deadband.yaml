@@ -1,0 +1,9 @@
+# Hardware guard-chain adapter; both collision checks use installed Nav2.
+control_guard_deadband:
+  ros__parameters:
+    use_sim_time: false
+    minimum_linear_command: 0.15 # [m/s command] Measured forward/reverse executable minimum.
+    minimum_angular_command: 0.35 # [rad/s command] Measured in-place executable minimum.
+    navigation_turn_limit: 0.8 # [rad/s command] Existing cap; reject proposals above it.
+    command_timeout: 0.5 # PROVISIONAL [s ROS] Same stale-command budget as Control; expiry outputs zero.
+    guard_watchdog_rate: 5.0 # [Hz] Low-load coordinator cadence; watchdog idle sends nothing.

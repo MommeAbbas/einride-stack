@@ -1,0 +1,3 @@
+# CPU fallback; install into a --system-site-packages venv with PYTHONNOUSERSITE=1.
+# TensorRT 10.16 and matching cuda-python come from the robot's existing GPU environment.
+onnxruntime==1.23.2

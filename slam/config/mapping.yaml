@@ -1,0 +1,81 @@
+slam_toolbox:
+  ros__parameters:
+
+    # Plugin params
+    solver_plugin: solver_plugins::CeresSolver
+    ceres_linear_solver: SPARSE_NORMAL_CHOLESKY
+    ceres_preconditioner: SCHUR_JACOBI
+    ceres_trust_strategy: LEVENBERG_MARQUARDT
+    ceres_dogleg_type: TRADITIONAL_DOGLEG
+    ceres_loss_function: None
+
+    # ROS Parameters
+    odom_frame: odom
+    map_frame: map
+    base_frame: base_footprint
+    scan_topic: /slam/scan
+    use_map_saver: false
+    mode: mapping # E0 only; E1–E4 use AMCL and the saved final pose.
+
+    debug_logging: false
+    throttle_scans: 1 # PROVISIONAL [scans] Validate accuracy and CPU on hardware.
+    transform_publish_period: 0.02 # PROVISIONAL [s sim] Validate accuracy and CPU on hardware.
+    map_update_interval: 1.0 # PROVISIONAL [s sim] Validate accuracy and CPU on hardware.
+    resolution: 0.04 # PROVISIONAL [m/cell] Validate accuracy and CPU on hardware.
+    restamp_tf: false
+    min_laser_range: 0.02 # PROVISIONAL [m] Validate accuracy and CPU on hardware.
+    max_laser_range: 12.0 # PROVISIONAL [m] Validate accuracy and CPU on hardware.
+    minimum_time_interval: 0.1 # PROVISIONAL [s sim] Validate accuracy and CPU on hardware.
+    transform_timeout: 0.2 # PROVISIONAL [s] Validate accuracy and CPU on hardware.
+    tf_buffer_duration: 30.0 # PROVISIONAL [s sim] Validate accuracy and CPU on hardware.
+    stack_size_to_use: 40000000 # PROVISIONAL [bytes] Validate accuracy and CPU on hardware.
+    enable_interactive_mode: true
+
+    # General Parameters
+    use_scan_matching: true
+    use_scan_barycenter: true
+    minimum_travel_distance: 0.05 # PROVISIONAL [m] Validate accuracy and CPU on hardware.
+    minimum_travel_heading: 0.05 # PROVISIONAL [rad] Validate accuracy and CPU on hardware.
+    check_min_dist_and_heading_precisely: false
+    scan_buffer_size: 10 # PROVISIONAL [scans] Validate accuracy and CPU on hardware.
+    scan_buffer_maximum_scan_distance: 10.0 # PROVISIONAL [m] Validate accuracy and CPU on hardware.
+    link_match_minimum_response_fine: 0.1 # PROVISIONAL [fraction/score] Validate accuracy and CPU on hardware.
+    link_scan_maximum_distance: 1.5 # PROVISIONAL [m] Validate accuracy and CPU on hardware.
+    loop_search_maximum_distance: 3.0 # PROVISIONAL [m] Validate accuracy and CPU on hardware.
+    do_loop_closing: true
+    loop_match_minimum_chain_size: 10 # PROVISIONAL [scans] Validate accuracy and CPU on hardware.
+    loop_match_maximum_variance_coarse: 3.0 # PROVISIONAL [m^2] Validate accuracy and CPU on hardware.
+    loop_match_minimum_response_coarse: 0.35 # PROVISIONAL [fraction/score] Validate accuracy and CPU on hardware.
+    loop_match_minimum_response_fine: 0.45 # PROVISIONAL [fraction/score] Validate accuracy and CPU on hardware.
+
+    # Correlation Parameters - Correlation Parameters
+    correlation_search_space_dimension: 0.5 # PROVISIONAL [m] Validate accuracy and CPU on hardware.
+    correlation_search_space_resolution: 0.01 # PROVISIONAL [m] Validate accuracy and CPU on hardware.
+    correlation_search_space_smear_deviation: 0.1 # PROVISIONAL [m] Validate accuracy and CPU on hardware.
+
+    # Correlation Parameters - Loop Closure Parameters
+    loop_search_space_dimension: 8.0 # PROVISIONAL [m] Validate accuracy and CPU on hardware.
+    loop_search_space_resolution: 0.04 # PROVISIONAL [m] Validate accuracy and CPU on hardware.
+    loop_search_space_smear_deviation: 0.03 # PROVISIONAL [m] Validate accuracy and CPU on hardware.
+
+    # Scan Matcher Parameters
+    distance_variance_penalty: 0.5 # PROVISIONAL [m^2] Validate accuracy and CPU on hardware.
+    angle_variance_penalty: 1.0 # PROVISIONAL [rad^2] Validate accuracy and CPU on hardware.
+
+    fine_search_angle_offset: 0.00349 # PROVISIONAL [rad] Validate accuracy and CPU on hardware.
+    coarse_search_angle_offset: 0.349 # PROVISIONAL [rad] Validate accuracy and CPU on hardware.
+    coarse_angle_resolution: 0.0349 # PROVISIONAL [rad] Validate accuracy and CPU on hardware.
+    minimum_angle_penalty: 0.9 # PROVISIONAL [fraction/score] Validate accuracy and CPU on hardware.
+    minimum_distance_penalty: 0.5 # PROVISIONAL [fraction/score] Validate accuracy and CPU on hardware.
+    use_response_expansion: true
+    min_pass_through: 2 # PROVISIONAL [observations] Validate accuracy and CPU on hardware.
+    occupancy_threshold: 0.1 # PROVISIONAL [fraction/score] Validate accuracy and CPU on hardware.
+    use_sim_time: true # [bool] ROS clock.
+    use_lifecycle_manager: true # [bool] Lifecycle-managed with Nav2 map saver.
+    position_covariance_scale: 1.0 # PROVISIONAL [factor] Backend covariance calibration pending.
+    yaw_covariance_scale: 1.0 # PROVISIONAL [factor] Backend covariance calibration pending.
+map_saver:
+  ros__parameters:
+    use_sim_time: true # [bool] ROS clock.
+    save_map_timeout: 10.0 # PROVISIONAL [s] Wait for transient-local occupancy map.
+    map_subscribe_transient_local: true # [bool] Save latest map.

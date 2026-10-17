@@ -1,0 +1,12 @@
+# PROVISIONAL Phase 1 acceptance scenario; numbers become runner ROS parameters.
+parameters:
+  traffic_count: 3 # [robots] Full prerequisite test.
+  traffic_modes: [ignore, ignore, ignore]
+  route_seed: 7 # [integer] Fixed for this run and all repetitions.
+  duration: 110.0 # [s sim] Long enough for three trucks to finish routes and dwell.
+  repetitions: 1 # [runs]
+  force_collision_at: 100.0 # [s sim] Labelled test only, excluded from benchmark score.
+features:
+  detector_enabled: true # [bool]
+  detector_source: emulator
+  detector_map_occlusion: true # [bool]

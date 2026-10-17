@@ -1,0 +1,114 @@
+{
+  "configById": {
+    "3D!arena": {
+      "customTitle": "Arena: truth, belief, plan and lidar",
+      "fixedFrame": "world",
+      "followTf": "map",
+      "followMode": "follow-none",
+      "cameraState": {
+        "distance": 9,
+        "perspective": false,
+        "phi": 0,
+        "thetaOffset": 0,
+        "target": [
+          0,
+          0,
+          0
+        ],
+        "targetOffset": [
+          0,
+          0,
+          0
+        ],
+        "targetOrientation": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "fovy": 45,
+        "near": 0.01,
+        "far": 100
+      },
+      "topics": {
+        "/map": {
+          "visible": true
+        },
+        "/visualization/robots": {
+          "visible": true
+        },
+        "/visualization/predictions": {
+          "visible": true
+        },
+        "/planning/path": {
+          "visible": true
+        },
+        "/scan": {
+          "visible": true
+        }
+      },
+      "scene": {},
+      "transforms": {},
+      "layers": {}
+    },
+    "Image!camera": {
+      "customTitle": "Camera with detector boxes",
+      "imageMode": {
+        "imageTopic": "/perception/image/compressed",
+        "rotation": 0,
+        "annotations": {}
+      },
+      "topics": {},
+      "scene": {},
+      "transforms": {},
+      "layers": {}
+    },
+    "RawMessages!behaviour": {
+      "customTitle": "Behaviour tree",
+      "topicPath": "/planning/behaviour"
+    },
+    "RawMessages!request": {
+      "customTitle": "DRIVE / WAIT / LOOK request",
+      "topicPath": "/control/request"
+    },
+    "RawMessages!status": {
+      "customTitle": "Control status / motion completion",
+      "topicPath": "/control/status"
+    },
+    "RawMessages!health": {
+      "customTitle": "Perception health / applied LOOK receipt",
+      "topicPath": "/perception/health"
+    }
+  },
+  "globalVariables": {},
+  "userNodes": {},
+  "playbackConfig": {
+    "speed": 1
+  },
+  "layout": {
+    "direction": "row",
+    "splitPercentage": 67,
+    "first": "3D!arena",
+    "second": {
+      "direction": "column",
+      "splitPercentage": 40,
+      "first": "Image!camera",
+      "second": {
+        "direction": "column",
+        "splitPercentage": 25,
+        "first": "RawMessages!behaviour",
+        "second": {
+          "direction": "row",
+          "splitPercentage": 50,
+          "first": "RawMessages!request",
+          "second": {
+            "direction": "column",
+            "splitPercentage": 50,
+            "first": "RawMessages!status",
+            "second": "RawMessages!health"
+          }
+        }
+      }
+    }
+  }
+}

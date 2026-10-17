@@ -1,0 +1,138 @@
+# PROVISIONAL joint-build values. Risk method and threshold require calibration review.
+/**:
+  ros__parameters:
+    opennav_docking: false # [bool] Hardware uses installed DockRobot/UndockRobot; legacy sim path unchanged.
+    dock_source_range: 3.0 # PROVISIONAL [m] Attribution only; match Nav2 obstacle source range.
+    dock_depth_min_height: 0.04 # PROVISIONAL [m] Attribution uses collision-monitor base-frame filter.
+    dock_depth_max_height: 0.50 # PROVISIONAL [m] Attribution uses collision-monitor base-frame filter.
+    dock_occupancy_enabled: true # [bool] Physical dock admission, independent of timed risk.
+    dock_static_margin: 0.12 # PROVISIONAL [m] Static association margin for map artifacts near saved walls.
+    dock_occupancy_radius: 0.5 # PROVISIONAL [m] integration-selected radius about docking centre.
+    dock_standoff_back: 0.8 # PROVISIONAL [m] Back from mapped approach, clear of departing robot.
+    dock_standoff_side: 0.4 # PROVISIONAL [m] Sideways from exit centreline; choose a known-clear side.
+    dock_clear_time: 2.0 # PROVISIONAL [s sim] Continuous fresh clear observations before re-entry.
+    dock_use_predictions: false # PROVISIONAL [bool] Recorded tracking error exceeds 0.3 m; retain sensor-costmap admission until corrected.
+    dock_track_max_age: 2.0 # PROVISIONAL [s sim] camera-specific receipt age limit.
+    dock_track_max_sigma: 0.3 # PROVISIONAL [m] selected largest 1-sigma positional uncertainty limit.
+    use_sim_time: true
+    saga_url: http://127.0.0.1:8000 # Runtime local Saga endpoint.
+    saga_token: '' # Secret runtime parameter ONLY; never record parameter_events.
+    saga_poll_period: 1.0 # [s sim] Saga recommended poll cadence.
+    http_timeout: 0.5 # PROVISIONAL [s wall] Bound asynchronous request latency.
+    saga_stale_timeout: 3.0 # PROVISIONAL [s sim] Keep last route but WAIT on stale response.
+    tick_rate: 5.0 # PROVISIONAL [Hz sim] Measure replanning and request latency.
+    global_costmap_topic: /global_costmap/costmap # Nav2 OccupancyGrid with StaticLayer + ObstacleLayer.
+    costmap_stale_timeout: 1.0 # PROVISIONAL [s sim] No mission plan on stale dynamic occupancy.
+    encounter_replan_service: /planning/replan_encounter # PROVISIONAL std_srvs/Trigger bridge to existing A*.
+    encounter_drive_probe: 0.5 # PROVISIONAL [s sim] Allow final guard to reevaluate a new direction; never bypasses it.
+    plan_period: 1.0 # PROVISIONAL [s sim] A* refresh cadence; also replan on goal/correction.
+    robot_radius: 0.168 # [m] Circumscribed nominal footprint rounded upwards.
+    obstacle_clearance: 0.13 # PROVISIONAL [m] Total 0.298 m covers the unchanged guard's 0.292 m swept corner; validate tracking margin.
+    occupied_threshold: 50 # PROVISIONAL [0..100] Unknown always blocked for planning.
+    speed_limit: 0.3 # PROVISIONAL [m/s] Validate MPPI and stopping distance.
+    turn_rate: 0.6 # PROVISIONAL [rad/s] Timed candidate conservative turn limit.
+    risk_horizon: 3.0 # PROVISIONAL [s] integration proposal, not validated safety limit.
+    trajectory_dt: 0.25 # PROVISIONAL [s] Validate matching/interpolation.
+    safety_margin: 0.20 # PROVISIONAL [m outside BOTH footprints] selected clearance.
+    risk_tolerance: 0.45 # TEMPORARY [probability] Calibration decision pending; compare outcomes, not injection floor.
+    risk_samples_power: 7 # PROVISIONAL [log2 samples] Deterministic quadrature convergence test.
+    probability_epsilon: 0.000001 # PROVISIONAL [probability] Numerical mass tolerance.
+    own_pose_sigma: 0.0 # [m] Perception already includes pose error; avoid adding twice by default.
+    prediction_stale_timeout: 1.2 # PROVISIONAL [s sim] Measure output/transport lag.
+    pose_stale_timeout: 0.3 # PROVISIONAL [s sim] Latest common map/base TF must be recent, even with fresh odometry.
+    goal_tolerance: 0.09 # PROVISIONAL [m] Below simulation organiser tolerance.
+    approach_distance: 0.5 # PROVISIONAL [m] Final docking phase distance.
+    request_lease: 1.0 # PROVISIONAL [s sim] Coordinator holds on communication loss.
+    look_timeout: 20.0 # PROVISIONAL [s sim] Heading and stop completion deadline.
+    look_cooldown: 4.0 # PROVISIONAL [s sim] Avoid repeating an unproductive view.
+    look_observation_timeout: 3.0 # PROVISIONAL [s sim] Bound wait for post-turn receipt; failure stays WAIT.
+    deadlock_timeout: 8.0 # PROVISIONAL [s sim] Trigger new candidate/replan, never waive risk.
+    understanding_threshold: 0.03 # PROVISIONAL [probability] Relevant unconfirmed mass for LOOK.
+    risk_check: false # [bool] Baseline; evaluation comparison explicitly enables risk on Nav2 /plan.
+    risk_wait_limit: 8.0 # PROVISIONAL [s sim] selected cap per risk WAIT, then resume for Nav2 replan.
+    look: true # [bool] Feature switch.
+    observation_curves: true # [bool] Try visibility-qualified detour before stationary LOOK.
+    observation_offset: 0.3 # PROVISIONAL [m] Candidate waypoint side offset, checked against inflated map.
+    observation_turn_limit: 0.25 # PROVISIONAL [rad/s] Camera usable-turn limit; validate with control.
+    observation_hfov: 1.05 # PROVISIONAL [rad] Usable camera view including edge margin.
+    manual_goal: -1 # [dock ID] E1 hand-supplied goal, -1 uses Saga.
+    qos_depth: 10 # PROVISIONAL [messages] Runtime queue capacity.
+    explore: true # [bool] TEMPORARY frontier exploration until map and all docks ready.
+    coverage_wall_distance: 0.8 # PROVISIONAL [m] Sensor-map camera viewpoints clear of walls.
+    coverage_spacing: 1.2 # PROVISIONAL [m] Camera survey viewpoint separation.
+    frontier_band: 0.45 # PROVISIONAL [m] Stand back from unknown boundary.
+    frontier_spacing: 0.4 # PROVISIONAL [m] Avoid revisiting the same frontier.
+    frontier_stride: 5 # PROVISIONAL [cells sampled] Candidate search CPU budget.
+    path_spacing: 0.04 # PROVISIONAL [m] Dense Nav2 preview; preserve verified straight-segment clearance.
+    mission_enabled: true # [bool] E0 explores then holds; later stages execute missions.
+    dock_heading_tolerance: 0.12 # PROVISIONAL [rad] Face tag before final approach/arrival.
+    dock_observation_timeout: 0.8 # PROVISIONAL [s sim] Require fresh tag observations during final approach.
+    dock_observation_gate: 0.3 # PROVISIONAL [m] Reject observations inconsistent with mapped landmark.
+    tag_revisit_dwell: 1.5 # PROVISIONAL [s sim] Multiple separated frames at the estimated tag approach.
+    tag_revisit_timeout: 25.0 # PROVISIONAL [s sim] Retry another viewpoint if tag support remains insufficient.
+    tag_revisit_cooldown: 30.0 # PROVISIONAL [s sim] Avoid repeatedly selecting an unreachable tag.
+    tag_revisit_standoff: 1.4 # PROVISIONAL [m] Obtain closer tag support without trusting an uncertain first normal.
+    tag_view_samples: 16 # PROVISIONAL [candidate angles] Reachable viewpoints around tentative tag positions.
+
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      use_sim_time: true
+      global_frame: map
+      robot_base_frame: base_footprint
+      rolling_window: false
+      track_unknown_space: true
+      resolution: 0.04 # PROVISIONAL [m/cell] Static map layer adopts actual map resolution/extent.
+      update_frequency: 5.0 # PROVISIONAL [Hz sim] Live planning obstacle updates.
+      publish_frequency: 5.0 # PROVISIONAL [Hz sim] Match planning tick.
+      always_send_full_costmap: true # Existing Grid adapter receives complete snapshots, not patches.
+      transform_tolerance: 0.2 # PROVISIONAL [s] Common TF budget.
+      robot_radius: 0.168 # [m] Existing envelope; explicit footprint below controls self clearing.
+      footprint: '[[0.126,0.116],[0.126,-0.116],[-0.126,-0.116],[-0.126,0.116]]' # [m] Full model outline; avoid circular self-clearing of nearby obstacles.
+      footprint_padding: 0.01 # PROVISIONAL [m] Same additional margin as local costmap.
+      plugins: [static_layer, obstacle_layer, inflation_layer]
+      static_layer:
+        plugin: nav2_costmap_2d::StaticLayer
+        map_topic: /map
+        map_subscribe_transient_local: true
+        subscribe_to_updates: true
+      inflation_layer:
+        plugin: nav2_costmap_2d::InflationLayer
+        # Installed Nav2 defaults; Smac consumes costs directly, no custom inflation.
+      obstacle_layer:
+        plugin: nav2_costmap_2d::ObstacleLayer
+        enabled: true
+        observation_sources: scan depth depth_clearing # Separate marking/clearing buffers preserve observed floor rays.
+        depth_clearing:
+          topic: /control/depth_points
+          data_type: PointCloud2
+          marking: false # Floor observations may clear old cells, NEVER mark them.
+          clearing: true
+          min_obstacle_height: -0.05 # PROVISIONAL [m] Accept noisy floor endpoints for raytrace clearing only.
+          max_obstacle_height: 0.50 # PROVISIONAL [m] Same observed vertical extent.
+          raytrace_max_range: 4.0 # PROVISIONAL [m] Unchanged sensor clearing range.
+        depth:
+          topic: /control/depth_points
+          data_type: PointCloud2
+          clearing: true
+          marking: true
+          min_obstacle_height: 0.04 # PROVISIONAL [m] Same floor exclusion as collision monitor.
+          max_obstacle_height: 0.50 # PROVISIONAL [m] Same height cap as collision monitor.
+          obstacle_max_range: 3.0 # PROVISIONAL [m] Match existing lidar obstacle range.
+          raytrace_max_range: 4.0 # PROVISIONAL [m] Match existing clearing range.
+        scan:
+          topic: /scan
+          data_type: LaserScan
+          clearing: true
+          marking: true
+          inf_is_valid: false # NaN/no-return bins never clear unseen space.
+          obstacle_max_range: 3.0 # PROVISIONAL [m] Same scan obstacle range as local costmap.
+          raytrace_max_range: 4.0 # PROVISIONAL [m] Finite-beam clearing range.
+
+planner_server:
+  ros__parameters:
+    use_sim_time: true
+    planner_plugins: [GridBased]
+    GridBased:
+      plugin: nav2_smac_planner::SmacPlanner2D
+      # All search, smoothing, tolerance and timing values use installed Nav2 defaults.

@@ -1,0 +1,19 @@
+# PROVISIONAL E4 yield verification, not an ablation run. Requires a validated sensor snapshot.
+parameters:
+  stack_stage: E4
+  map_source: snapshot
+  traffic_count: 3 # [robots]
+  traffic_modes: [yield, yield, yield]
+  route_seed: 7 # [integer]
+  duration: 300.0 # [s sim] User-requested five-minute check.
+  run_wall_timeout: 1800.0 # PROVISIONAL [s wall] Full-stack watchdog, not a speed target.
+  repetitions: 1 # [runs]
+  force_collision_at: -1.0 # [s sim] Disabled for integration metrics.
+  record_images: true
+features:
+  detector_enabled: true
+  detector_source: emulator
+  planning_risk: true # evaluation comparison b: timed risk on Nav2 /plan.
+  planning_look: true
+  planning_observation_curves: true
+  control_prediction_critic: true

@@ -1,0 +1,39 @@
+amcl:
+  ros__parameters:
+    use_sim_time: true # [bool] ROS clock.
+    global_frame_id: map # REP 105 fixed saved-map frame.
+    odom_frame_id: odom # Wheel odometry frame.
+    base_frame_id: base_footprint # Robot reference frame.
+    scan_topic: /slam/scan # Private adapter rejects invalid beams, never clears them.
+    tf_broadcast: true # [bool] AMCL owns map -> odom in E1–E4.
+    set_initial_pose: false # [bool] Adapter sends saved final pose/covariance through /initialpose.
+    always_reset_initial_pose: true # [bool] No configured startup origin.
+    robot_model_type: nav2_amcl::DifferentialMotionModel # Maintained diff-drive approximation.
+    alpha1: 0.2 # PROVISIONAL [variance coefficient] Rotation noise from rotation.
+    alpha2: 0.2 # PROVISIONAL [variance coefficient] Rotation noise from translation.
+    alpha3: 0.2 # PROVISIONAL [variance coefficient] Translation noise from translation.
+    alpha4: 0.2 # PROVISIONAL [variance coefficient] Translation noise from rotation.
+    min_particles: 500 # PROVISIONAL [particles] Benchmark Jetson accuracy and CPU.
+    max_particles: 2000 # PROVISIONAL [particles] Adaptive sampling limit.
+    max_beams: 120 # PROVISIONAL [beams/scan] Small-arena likelihood support.
+    laser_model_type: likelihood_field # Ignores invalid/max-range observations.
+    laser_likelihood_max_dist: 2.0 # PROVISIONAL [m] Distance-field truncation.
+    laser_max_range: 12.0 # [m] LD19 specification, clipped by scan metadata.
+    laser_min_range: 0.02 # [m] LD19 specification.
+    sigma_hit: 0.08 # PROVISIONAL [m stddev] Calibrate range/map mismatch.
+    z_hit: 0.95 # PROVISIONAL [mixture weight] Hit model.
+    z_rand: 0.05 # PROVISIONAL [mixture weight] Outlier model.
+    update_min_d: 0.02 # PROVISIONAL [m] Measurement update translation.
+    update_min_a: 0.02 # PROVISIONAL [rad] Measurement update rotation.
+    resample_interval: 1 # PROVISIONAL [updates] Resampling period.
+    pf_err: 0.05 # PROVISIONAL [fraction] KLD sampling error.
+    pf_z: 0.99 # PROVISIONAL [probability] KLD sampling confidence.
+    recovery_alpha_fast: 0.0 # PROVISIONAL [fraction] Upstream disabled random recovery.
+    recovery_alpha_slow: 0.0 # PROVISIONAL [fraction] Kidnap recovery needs validation.
+    transform_tolerance: 0.2 # PROVISIONAL [s sim] Future TF validity.
+    save_pose_rate: -1.0 # [Hz; negative disables] Snapshot alone supplies startup pose.
+map_server:
+  ros__parameters:
+    use_sim_time: true # [bool] ROS clock.
+    topic_name: map # Existing OccupancyGrid interface.
+    frame_id: map # REP 105 saved-map frame.

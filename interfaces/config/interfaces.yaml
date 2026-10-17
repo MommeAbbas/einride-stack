@@ -1,0 +1,4 @@
+# PROVISIONAL: interfaces have no runtime node or numeric tuning.
+/**:
+  ros__parameters:
+    use_sim_time: true # [bool] Required for future interface consumers in simulation.

@@ -1,0 +1,16 @@
+/**:
+  ros__parameters:
+    use_sim_time: false # [bool] Hardware wall clock; override for bag replay.
+    backend: tensorrt # [enum] tensorrt / onnx; TensorRT import/load failure logs once and falls back to ONNX CPU.
+    engine_path: ~/models/robot_detector_v1/best_fp16.engine # Built on robot, TensorRT 10.16.
+    onnx_path: ~/models/robot_detector_v1/best.onnx # Same trained model, CPU fallback.
+    image_topic: /oak/rgb/image_raw # [topic] Hardware bgr8 or simulation rgb8.
+    output_topic: /sim/detections # [topic] Existing Detection2DArray contract, no truth input.
+    confidence_threshold: 0.25 # PROVISIONAL [probability] Validate hardware precision/recall.
+    nms_iou_threshold: 0.45 # PROVISIONAL [intersection/union] Validate overlapping robots.
+    subscription_audit_period: 5.0 # PROVISIONAL [s ROS] Refresh declared/published type diagnostics.
+    runtime_report_period: 1.0 # PROVISIONAL [s wall] Completed inference frequency for robot_check.
+    rate_limit: 10.0 # PROVISIONAL [frames/s wall] Drop excess input; never publish fake empty frames.
+    onnx_threads: 2 # PROVISIONAL [CPU threads] Leave CPU available to MPPI.
+    qos_depth: 10 # PROVISIONAL [messages] Reliable output queue, matching existing emulator publisher.
+    error_log_period: 1.0 # PROVISIONAL [s wall] Repeated inference error log throttle.

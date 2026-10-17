@@ -1,0 +1,1 @@
+<library path="prediction_critic"><class type="mppi::critics::PredictionCritic" base_class_type="mppi::critics::CriticFunction"><description>Timed probability-weighted soft proximity including leftover mass.</description></class></library>

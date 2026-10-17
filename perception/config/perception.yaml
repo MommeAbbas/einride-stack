@@ -1,0 +1,102 @@
+# PROVISIONAL simulation defaults; hardware calibration and Jetson particle benchmark pending.
+/**:
+  ros__parameters:
+    use_sim_time: true
+    seed: 17 # [integer] Repeatable filter RNG; vary in future ablations.
+    prediction_seed: 29 # [integer] Separate rollout RNG; does not mutate posterior.
+    camera_measurement_birth: true # PROVISIONAL [bool] Initialise unseen slot from actual camera range, avoiding empty likelihood support.
+    camera_birth_sigma_scale: 1.4142135623730951 # PROVISIONAL [dimensionless] Same sqrt(2) proposal spread as verified replay; exposed for calibration.
+    camera_birth_draw_multiplier: 4 # PROVISIONAL [samples per particle] Rejection proposal budget for free map support.
+    cpu_log_period: 30.0 # [s wall] Process CPU log interval; 100% = one core.
+    subscription_audit_period: 5.0 # PROVISIONAL [s ROS] Refresh declared/published type diagnostics.
+    runtime_report_period: 1.0 # PROVISIONAL [s wall] Lightweight commissioning telemetry.
+    particles_per_robot: 160 # PROVISIONAL [particles] Benchmark Jetson with full workload.
+    filter_rate: 10.0 # PROVISIONAL [Hz ROS maximum] Arrival-triggered coalescing/lag drain; timer cancelled when idle.
+    output_rate: 2.0 # PROVISIONAL [Hz sim] Measure consumer freshness budget.
+    max_sensor_lag: 0.2 # PROVISIONAL [s] Measure capture-to-arrival delays.
+    prediction_dt: 0.25 # PROVISIONAL [s] Validate interpolation accuracy.
+    horizon: 4.0 # PROVISIONAL [s] Covers planning 3s plus sensor/output lag.
+    max_groups: 4 # PROVISIONAL [groups] Benchmark representation loss.
+    minimum_group_mass: 0.06 # PROVISIONAL [probability] Compare retained modes; rest stays spatial leftover.
+    mode_cell_size: 0.7 # TEMPORARY [m] Spatial route-mode partition; needs route-topology review.
+    covariance_epsilon: 0.000001 # PROVISIONAL [m^2] Numerical positive-definiteness.
+    robot_radius: 0.168 # [m] Circumscribed nominal footprint, rounded upwards.
+    robot_height: 0.177 # [m] Sim mesh maximum: lidar mounting 0.142 + housing 0.035; hardware extent PROVISIONAL.
+    camera_height: 0.124 # [m] Model mounting; capture TF used for world projection.
+    camera_hfov: 1.2191125 # [rad] Camera specification.
+    fov_edge_margin: 0.08 # PROVISIONAL [rad per edge] Measure recall near edge.
+    detect_max_range: 4.0 # PROVISIONAL [m] Fit detector recall curve.
+    p_detect: 0.7 # PROVISIONAL [probability] Conservative recall, needs calibration.
+    max_look_turn_rate: 0.25 # PROVISIONAL [rad/s] Measure motion blur on hardware.
+    pose_sigma_xy: 0.05 # PROVISIONAL [m stddev] Obtain from localisation validation.
+    pose_sigma_yaw: 0.05 # PROVISIONAL [rad stddev] Obtain from localisation validation.
+    floor_cue: true # [bool] Feature switch.
+    height_cue: true # [bool] Feature switch.
+    depth_cue: true # [bool] Feature switch.
+    floor_sigma: 0.25 # PROVISIONAL [m stddev] Fit floor-contact residuals.
+    height_sigma: 0.3 # PROVISIONAL [m stddev] Fit height residuals.
+    depth_sigma: 0.12 # PROVISIONAL [m stddev] Include box-background contamination.
+    cue_gate: 0.7 # PROVISIONAL [m] Fit cross-cue outlier rejection.
+    min_depth_pixels: 12 # PROVISIONAL [pixels] Validate small boxes.
+    depth_min: 0.2 # [m] Camera near limit.
+    depth_max: 10.0 # [m] Camera reported range limit, not assured accuracy.
+    depth_topic: /oak/stereo/image_raw # Simulation depth; hardware changes this input.
+    detector_source: emulator # [enum] emulator/external; never reads simulator truth.
+    detector_topic: /sim/detections # Anonymous boxes through camera model only.
+    lidar: true # [bool] Surprise measurements enabled.
+    lidar_negative_evidence: false # [bool] Default off pending housing hit-rate measurement.
+    lidar_p_detect: 0.7 # PROVISIONAL [probability] Optional negative evidence; measure housing hit rate.
+    lidar_negative_max_speed: 0.025 # PROVISIONAL [m/s] Only nearly stopped sweeps establish negative evidence.
+    lidar_negative_max_turn_rate: 0.04 # PROVISIONAL [rad/s] Avoid claiming clear sectors from moving sweeps.
+    camera_negative_evidence: true # [bool] Processed-frame saw-nothing evidence.
+    lidar_max_range: 1.3 # PROVISIONAL [m] 36mm housing spans about two bins; measure.
+    lidar_surprise: 0.16 # PROVISIONAL [m] Tune against empty-arena false positives.
+    lidar_static_gate: 0.12 # PROVISIONAL [m] Endpoint-to-map association; E3 static-edge residual reached 0.0895 m, plus one half-cell diagonal. Validate hardware and near-wall robot recall.
+    lidar_sigma: 0.12 # PROVISIONAL [m stddev] Fit returns and pose error.
+    lidar_max_group_bins: 4 # PROVISIONAL [bins] Measure housing angular extent.
+    self_mask_bins: [-1] # [bin indices] Sentinel -1 ignored; replace with measured fixed bins.
+    heavy_tail: true # [bool] Feature switch.
+    outlier_eps: 0.08 # PROVISIONAL [probability] Fit outlier contamination.
+    uniform_likelihood: 0.01 # PROVISIONAL [relative density] Fit likelihood domain normalisation.
+    resample_threshold: 0.5 # PROVISIONAL [ESS/N] Check depletion/calibration.
+    injection: true # [bool] Feature switch.
+    inject_fraction: 0.03 # PROVISIONAL [fraction] Tune calibration; never sets planning risk tolerance.
+    init_exclusion_radius: 0.4 # PROVISIONAL [m] Exclude own occupied area.
+    coasting_variance_rate: 0.25 # PROVISIONAL [m^2/s per axis] One-pass growth since last ranged support; evaluate calibration without repeated tuning.
+    unsupported_track_timeout: 5.0 # PROVISIONAL [s sim] Delete unsupported estimate; restore anonymous unconfirmed prior in fixed slot.
+    association_gate_squared: 5.991 # PROVISIONAL [dimensionless squared Mahalanobis distance] 2D 95% gate on confirmed ranged tracks; validate residuals.
+    association_unmatched_evidence: 0.0012 # PROVISIONAL [relative likelihood] Above 0.0008 heavy-tail-only floor; reject unsupported assignments.
+    support_probability: 0.6 # PROVISIONAL [probability] Label confirmation gate; fit associations.
+    dock_steering: true # [bool] Feature switch.
+    dock_switch_rate: 0.02 # PROVISIONAL [1/s] Tune destination recovery.
+    dock_leave_rate: 0.2 # PROVISIONAL [1/s] Fit dwell distribution.
+    dock_radius: 0.18 # PROVISIONAL [m] Define docked region; compare true stops.
+    departure_speed: 0.2 # PROVISIONAL [m/s] Fit traffic departures.
+    max_speed: 0.7 # PROVISIONAL [m/s] Bound simulation motion; hardware requires measurement.
+    max_turn_rate: 1.5 # PROVISIONAL [rad/s] Fit traffic limits.
+    speed_noise: 0.15 # PROVISIONAL [m/s/sqrt(s)] Tune calibration.
+    turn_noise: 0.4 # PROVISIONAL [rad/s/sqrt(s)] Tune calibration.
+    steering_gain: 2.0 # PROVISIONAL [1/s] Fit heading response.
+    steering_strength: 1.0 # PROVISIONAL [1/s] Tune destination persistence.
+    dock_free_threshold: 0.15 # PROVISIONAL [probability] Requires planning review.
+    understanding_age: 1.0 # PROVISIONAL [s] Unconfirmed support age threshold.
+    understanding_radius: 0.5 # PROVISIONAL [m] Relevant plan neighbourhood.
+    saga_stale_timeout: 3.0 # PROVISIONAL [s sim] Release destination exclusions on stale own route.
+    input_stale_timeout: 1.0 # PROVISIONAL [s sim] Health degrades without processed camera frames.
+    qos_depth: 10 # PROVISIONAL [messages] Check capture lag and dropped frames.
+    odom_history_size: 100 # PROVISIONAL [messages] Covers capture lag at odom rate.
+    occupied_threshold: 50 # PROVISIONAL [0..100] Occupancy classification; unknown blocked.
+    depth_sync_tolerance: 0.1 # PROVISIONAL [s] Maximum depth/frame mismatch.
+    pose_time_tolerance: 0.1 # PROVISIONAL [s] Turn-rate capture match tolerance.
+    debug_image_rate: 5.0 # PROVISIONAL [Hz sim] Viewer/bag bandwidth.
+    debug_box_tolerance: 0.15 # PROVISIONAL [s] Overlay freshness limit.
+    debug_jpeg_quality: 70 # PROVISIONAL [0..100] Viewer/bag quality tradeoff.
+    external_detector_topic: /detections # External Detection2DArray adapter; explicit source switch.
+    dock_tag_rate: 3.0 # PROVISIONAL [Hz sim] Final alignment observations.
+    dock_tag_size: 0.100 # [m] Simulator black border; measure hardware.
+    dock_tag_reprojection_gate: 2.0 # PROVISIONAL [pixels RMS] Reject bad PnP fits.
+    dock_tag_sigma: 0.08 # PROVISIONAL [m stddev] Fit range-dependent tag error.
+    dock_tag_yaw_sigma: 0.12 # PROVISIONAL [rad stddev] Fit planar-pose ambiguity.
+    dock_standoff: 0.4 # PROVISIONAL [m] Tag plane to stopped robot centre.
+    dock_approach_standoff: 0.7 # PROVISIONAL [m] Start final tag alignment.
+    dock_observation_timeout: 0.8 # PROVISIONAL [s sim] Retain recent valid tag through isolated missed frames; preserve capture stamp.

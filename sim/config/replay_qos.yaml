@@ -1,0 +1,15 @@
+# Late-joining viewer must receive the fixed map, docks and static transforms.
+/tf_static:
+  reliability: reliable
+  durability: transient_local
+  history: keep_all
+/map:
+  reliability: reliable
+  durability: transient_local
+  history: keep_last
+  depth: 1
+/slam/docks:
+  reliability: reliable
+  durability: transient_local
+  history: keep_last
+  depth: 1

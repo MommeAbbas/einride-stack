@@ -1,0 +1,18 @@
+# PROVISIONAL functional branch coverage, not Phase 4 or a baseline safety change.
+# The corrected empty-scene baseline can complete routes without needing a LOOK.
+parameters:
+  stack_stage: E3
+  map_source: snapshot
+  traffic_count: 0 # [robots] Empty-scene check, all three beliefs remain active.
+  route_seed: 7 # [integer] Same route seed as integration baseline.
+  duration: 120.0 # PROVISIONAL [s sim] Exercise applied LOOK receipt and explicit DRIVE.
+  run_wall_timeout: 1800.0 # PROVISIONAL [s wall] Watchdog, not a speed target.
+  repetitions: 1 # [runs]
+  planning_risk_tolerance: 0.08 # PROVISIONAL [probability] Stricter trigger for branch coverage only; baseline is 0.45.
+features:
+  detector_enabled: true
+  detector_source: emulator
+  planning_risk: false # V1 configuration: timed-path risk disabled; code retained.
+  planning_look: true
+  planning_observation_curves: true
+  control_prediction_critic: true

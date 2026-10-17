@@ -1,0 +1,20 @@
+# Ignore-traffic admission scenario with a collision-free initial handover.
+parameters:
+  stack_stage: E4
+  map_source: snapshot
+  traffic_count: 3
+  traffic_modes: [ignore, ignore, ignore]
+  traffic_spawns: [0.4, -0.8, 0.0, -0.8, -1.6, 1.57, 0.8, 1.6, -1.57] # PROVISIONAL [m,m,rad] First x moved from 0.8 to avoid initial footprint overlap.
+  route_seed: 7
+  duration: 300.0 # [s sim] Same five-minute acceptance.
+  run_wall_timeout: 3600.0 # PROVISIONAL [s wall] Full-stack watchdog.
+  repetitions: 1
+  force_collision_at: -1.0
+  record_images: true
+features:
+  detector_enabled: true
+  detector_source: emulator
+  planning_risk: false
+  planning_look: true
+  planning_observation_curves: true
+  control_prediction_critic: false

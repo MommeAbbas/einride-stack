@@ -1,0 +1,35 @@
+# PROVISIONAL camera coverage geometry and search budget; tighten from hardware observations.
+/**:
+  ros__parameters:
+    use_sim_time: false
+    tag_search: coverage # [enum] coverage/off; explore_lite remains the lidar explorer.
+    coverage_detection_range: 2.5 # PROVISIONAL [m] Selected limit; geometric 25px head-on ceiling ~3.5m.
+    coverage_max_incidence_deg: 45.0 # PROVISIONAL [deg] Selected limit relative to wall outward normal.
+    coverage_hfov_deg: 69.85 # [deg] Reported horizontal camera field of view.
+    coverage_wall_height: 0.15 # PROVISIONAL [m] Representative tag-centre height for 2D wall coverage; use real camera vertical frustum.
+    coverage_occupied_threshold: 65 # PROVISIONAL [occupancy %] Same static-map occupied convention.
+    coverage_min_clearance: 0.30 # PROVISIONAL [m] Exceeds Stop circumradius .239m plus map discretisation margin.
+    coverage_candidate_spacing: 0.4 # PROVISIONAL [m] Free-pose sampling grid.
+    coverage_heading_samples: 12 # PROVISIONAL [headings/pose] Angular candidate resolution.
+    coverage_max_candidates: 120 # PROVISIONAL [poses] Bound scoring CPU on Jetson.
+    coverage_travel_weight: 5.0 # PROVISIONAL [wall cells/m] Subtract actual Nav2 path length from information score.
+    coverage_reachable_checks: 5 # PROVISIONAL [candidates/tick] Nav2 reachability shortlist size.
+    coverage_goal_timeout: 60.0 # PROVISIONAL [s ROS] Cancel failed/stuck viewing goal and choose another.
+    coverage_total_timeout: 900.0 # PROVISIONAL [s ROS] Overall lidar+camera mapping budget.
+    coverage_retry_cooldown: 30.0 # PROVISIONAL [s ROS] Failed/uninformative viewpoint cooldown.
+    coverage_tick_period: 0.2 # PROVISIONAL [s ROS] Mapping coordinator rate.
+    coverage_camera_rate: 7.0 # [frames/s] Observed hardware RGB rate, used for minimum hold duration.
+    coverage_validator_rate: 3.0 # [frames/s] Overridden from SLAM tag_rate by launch.
+    coverage_sighting_interval: 0.5 # [s] Overridden from SLAM independent-observation interval.
+    coverage_required_sightings: 3 # [frames] Overridden from SLAM validator requirement.
+    coverage_stop_linear: 0.02 # PROVISIONAL [m/s] Only stationary frames count during validation dwell.
+    coverage_stop_angular: 0.03 # PROVISIONAL [rad/s] Only stationary frames count during validation dwell.
+    coverage_dwell_timeout: 12.0 # PROVISIONAL [s ROS] Missing frames cannot hold forever; overall timeout also applies.
+    coverage_tag_standoff: 0.9 # PROVISIONAL [m] Prefer nearby head-on views for high-covariance tags.
+    coverage_tag_bonus: 100.0 # PROVISIONAL [wall-cell equivalents] Prefer uncertain identified docks over generic wall coverage.
+    coverage_max_position_variance: 0.01 # PROVISIONAL [m^2] Overridden from SLAM validation threshold.
+    coverage_max_yaw_variance: 0.04 # PROVISIONAL [rad^2] Overridden from SLAM validation threshold.
+    coverage_ray_step_fraction: 0.5 # PROVISIONAL [cell widths] Conservative occupancy ray sampling.
+    coverage_frame_stale: 1.0 # PROVISIONAL [s ROS] Reject delayed processed-frame receipts.
+    coverage_qualified_radius: 0.65 # PROVISIONAL [m] Wall neighbourhood explained by an already-qualified dock.
+    coverage_unqualified_weight: 100.0 # PROVISIONAL [gain/dock] Validation gain for every unqualified dock visible in one view.

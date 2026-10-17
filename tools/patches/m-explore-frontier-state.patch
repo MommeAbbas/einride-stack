@@ -1,0 +1,35 @@
+diff --git a/explore/include/explore/explore.h b/explore/include/explore/explore.h
+index 8799783..1a522b7 100644
+--- a/explore/include/explore/explore.h
++++ b/explore/include/explore/explore.h
+@@ -112,6 +112,7 @@ private:
+     * @brief Publisher for exploration status updates (see ExploreStatus.msg for status values)
+     */
+   rclcpp::Publisher<explore_lite_msgs::msg::ExploreStatus>::SharedPtr status_pub_;
++  rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr frontiers_remaining_pub_;
+ 
+   rclcpp::Logger logger_;
+   tf2_ros::Buffer tf_buffer_;
+diff --git a/explore/src/explore.cpp b/explore/src/explore.cpp
+index d72fb18..f98536f 100644
+--- a/explore/src/explore.cpp
++++ b/explore/src/explore.cpp
+@@ -103,6 +103,8 @@ Explore::Explore()
+   status_qos.transient_local();
+   status_pub_ = this->create_publisher<explore_lite_msgs::msg::ExploreStatus>("explore/status", status_qos);
+ 
++  frontiers_remaining_pub_ = this->create_publisher<std_msgs::msg::Bool>("explore/frontiers_remaining", status_qos);
++
+   // Subscription to resume or stop exploration
+   resume_subscription_ = this->create_subscription<std_msgs::msg::Bool>(
+       "explore/resume", 10,
+@@ -237,6 +239,9 @@ void Explore::makePlan()
+     RCLCPP_DEBUG(logger_, "frontier %zd cost: %f", i, frontiers[i].cost);
+   }
+ 
++  std_msgs::msg::Bool remaining;
++  remaining.data = !frontiers.empty();
++  frontiers_remaining_pub_->publish(remaining);
+   if (frontiers.empty()) {
+     RCLCPP_WARN(logger_, "No frontiers found, stopping.");
+     auto status_msg = explore_lite_msgs::msg::ExploreStatus();

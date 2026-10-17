@@ -1,0 +1,64 @@
+diff --git a/explore/CMakeLists.txt b/explore/CMakeLists.txt
+index 860dca7..c59a9cc 100644
+--- a/explore/CMakeLists.txt
++++ b/explore/CMakeLists.txt
+@@ -122,6 +122,8 @@ if(BUILD_TESTING)
+ 
+   find_package(ament_cmake_gtest REQUIRED)
+ 
++  ament_add_gtest(test_frontier_goal test/test_frontier_goal.cpp src/frontier_search.cpp)
++  ament_target_dependencies(test_frontier_goal nav2_costmap_2d rclcpp geometry_msgs)
+   ament_add_gtest(test_explore test/test_explore.cpp)
+ 
+   target_link_libraries(test_explore
+diff --git a/explore/src/frontier_search.cpp b/explore/src/frontier_search.cpp
+index 6085fd8..ae755e1 100644
+--- a/explore/src/frontier_search.cpp
++++ b/explore/src/frontier_search.cpp
+@@ -167,6 +167,17 @@ Frontier FrontierSearch::buildNewFrontier(unsigned int initial_cell,
+   // average out frontier centroid
+   output.centroid.x /= output.size;
+   output.centroid.y /= output.size;
++  // A curved/ring frontier's mean may lie in already-known space (even at the
++  // robot). Navigate to an actual frontier cell nearest the mean instead.
++  if (!output.points.empty()) {
++    const auto mean = output.centroid;
++    output.centroid = *std::min_element(
++        output.points.begin(), output.points.end(),
++        [&mean](const auto & a, const auto & b) {
++          return std::hypot(a.x - mean.x, a.y - mean.y) <
++                 std::hypot(b.x - mean.x, b.y - mean.y);
++        });
++  }
+   return output;
+ }
+ 
+diff --git a/explore/test/test_frontier_goal.cpp b/explore/test/test_frontier_goal.cpp
+new file mode 100644
+index 0000000..f129264
+--- /dev/null
++++ b/explore/test/test_frontier_goal.cpp
+@@ -0,0 +1,23 @@
++#include <gtest/gtest.h>
++#include <explore/frontier_search.h>
++#include <nav2_costmap_2d/cost_values.hpp>
++
++TEST(FrontierGoal, EnclosingFrontierCannotTargetAlreadyExploredCentre)
++{
++  nav2_costmap_2d::Costmap2D map(40, 40, 0.1, -2.0, -2.0,
++    nav2_costmap_2d::NO_INFORMATION);
++  for (unsigned y = 10; y < 30; ++y) {
++    for (unsigned x = 10; x < 30; ++x) {
++      map.setCost(x, y, nav2_costmap_2d::FREE_SPACE);
++    }
++  }
++  frontier_exploration::FrontierSearch search(&map, 3.0, 1.0, 0.75,
++    rclcpp::get_logger("test_frontier"));
++  geometry_msgs::msg::Point robot;
++  const auto frontiers = search.searchFrom(robot);
++  ASSERT_FALSE(frontiers.empty());
++  unsigned x, y;
++  ASSERT_TRUE(map.worldToMap(frontiers.front().centroid.x,
++    frontiers.front().centroid.y, x, y));
++  EXPECT_EQ(map.getCost(x, y), nav2_costmap_2d::NO_INFORMATION);
++}

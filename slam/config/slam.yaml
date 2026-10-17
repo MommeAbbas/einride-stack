@@ -1,0 +1,37 @@
+# Selected slam_toolbox -> AMCL, 2026-10-06. Numerical tuning is PROVISIONAL.
+/**:
+  ros__parameters:
+    use_sim_time: true
+    tag_size: 0.100 # [m] Black border size confirmed in simulator dock template; hardware must measure.
+    tag_tf_wait_timeout: 0.5 # PROVISIONAL [s ROS] Bound asynchronous capture-time TF wait; never substitute latest TF.
+    tag_tf_check_period: 0.02 # PROVISIONAL [s ROS] Check installed tf2 future without blocking TF subscriptions.
+    tag_rate: 3.0 # PROVISIONAL [Hz sim] CPU/observation tradeoff.
+    tag_reprojection_gate: 2.0 # PROVISIONAL [pixels RMS] Reject inconsistent tag pose.
+    mapping_managed: false # [bool] Hardware coverage manager controls completion; no early snapshot.
+    tag_geometry_covariance: false # [bool] Hardware: range/incidence inflation of the provisional tag error model.
+    tag_reference_range: 1.0 # PROVISIONAL [m] Range at which tag_sigma applies.
+    tag_max_incidence_deg: 45.0 # PROVISIONAL [deg] Independent validation observation gate.
+    dock_max_position_variance: 0.01 # PROVISIONAL [m^2] Maximum XY covariance eigenvalue for validated dock.
+    dock_max_yaw_variance: 0.04 # PROVISIONAL [rad^2] Maximum tag heading variance for validation.
+    tag_min_cosine: 0.1 # PROVISIONAL [dimensionless] Covariance numerical floor for grazing sighting.
+    tag_sigma: 0.08 # PROVISIONAL [m stddev] Needs capture-distance calibration.
+    tag_yaw_sigma: 0.12 # PROVISIONAL [rad stddev] Fit planar PnP uncertainty.
+    tag_min_observations: 3 # PROVISIONAL [independent frames] Readiness support threshold.
+    tag_mapping_max_range: 2.5 # PROVISIONAL [m] Far PnP sightings guide exploration only; validate near-pose error before readiness.
+    tag_observation_interval: 0.5 # PROVISIONAL [s] Avoid counting adjacent correlated images as independent support.
+    tag_outlier_gate: 0.3 # PROVISIONAL [m] Repeat landmark residual rejection.
+    covariance_intersection_weight: 0.5 # PROVISIONAL [fraction] Unknown correlation between repeated dock estimates.
+    dock_standoff: 0.4 # PROVISIONAL [m] Tag plane to safe robot centre.
+    approach_standoff: 0.7 # PROVISIONAL [m] Tag plane to approach point.
+    qos_depth: 10 # PROVISIONAL [messages] Input queues.
+    save_snapshot: '' # Runtime output path; ignored data only.
+    load_snapshot: '' # Previous sensor-built snapshot; empty starts fresh mapping.
+    status_rate: 1.0 # PROVISIONAL [Hz sim] Dock/status publication and snapshot polling.
+    base_frame: base_footprint # REP 105 robot reference frame.
+    snapshot_stop_linear: 0.02 # PROVISIONAL [m/s] Measured stop before saving.
+    snapshot_stop_angular: 0.03 # PROVISIONAL [rad/s] Measured stop before saving.
+    snapshot_settle: 2.0 # PROVISIONAL [s sim] Stationary time before final map save.
+    map_free_thresh: 0.25 # PROVISIONAL [probability] Nav2 trinary export threshold.
+    map_occupied_thresh: 0.65 # PROVISIONAL [probability] Nav2 trinary export threshold.
+    map_image_format: pgm # Lossless Nav2 map-saver format.
+    map_mode: trinary # Preserve unknown cells.

@@ -1,0 +1,8 @@
+# Hardware-only integration; all generated node/costmap configs use wall clock.
+/**:
+  ros__parameters:
+    discovery_capacity: 64 # PROVISIONAL [DDS participants] Same discovery fix as full simulation stack.
+    service_config: /etc/default/robot-base-service # External base service domain/transport; never source as code.
+    save_snapshot: ~/autonomy_ws/data/hardware/slam_snapshot.json # Map/docks/final pose saved automatically at readiness.
+    detector_python: /usr/bin/python3 # Override with robot's TensorRT/cuda-python or ONNX venv interpreter.
+    foxglove_port: 8765 # [TCP port] Existing viewer connection; do not launch a duplicate bridge.

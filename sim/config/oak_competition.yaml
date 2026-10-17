@@ -1,0 +1,54 @@
+# Competition RGBD: 640x360 at 5 Hz (selected configuration); map uses oak_hardware.yaml.
+# 1080P ISP 1/3 preserves FOV; width/height alone do not resize the RGB ISP.
+# Queue 1 [frames], PROVISIONAL: prefer fresh frames over delayed delivery.
+# Regenerate only after reviewing upstream camera calibration changes.
+# rgb/stereo i_get_base_device_timestamp=false selects host-synchronised timestamps;
+# i_update_ros_base_time_on_ros_msg=true refreshes ROS/steady-clock mapping.
+/oak:
+  ros__parameters:
+    camera:
+      i_enable_imu: true
+      i_pipeline_type: RGBD
+      i_enable_ir: false
+      i_nn_type: none
+      i_publish_tf_from_calibration: true
+      i_tf_base_frame: oak
+      i_tf_parent_frame: base_link
+      i_tf_imu_from_descr: 'true'
+    pipeline_gen:
+      i_enable_imu: true
+    rgb:
+      i_resolution: 1080P
+      i_set_isp_scale: true
+      i_isp_num: 1
+      i_isp_den: 3
+      i_max_q_size: 1
+      i_width: 640
+      i_height: 360
+      i_fps: 5.0
+      i_get_base_device_timestamp: false
+      i_update_ros_base_time_on_ros_msg: true
+    left:
+      i_publish_topic: false
+      i_fps: 5.0
+    right:
+      i_publish_topic: false
+      i_fps: 5.0
+    stereo:
+      i_resolution: 480P
+      i_align_depth: true
+      i_max_q_size: 1
+      i_width: 640
+      i_height: 360
+      i_fps: 5.0
+      i_subpixel: true
+      i_depth_preset: ROBOTICS
+      i_depth_filter_size: 7
+      i_stereo_conf_threshold: 245
+      i_get_base_device_timestamp: false
+      i_update_ros_base_time_on_ros_msg: true
+    imu:
+      i_acc_freq: 100
+      i_gyro_freq: 100
+      i_message_type: IMU
+    use_sim_time: false
