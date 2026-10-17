@@ -51,26 +51,26 @@ files. Those dependencies are deliberately not included here.
 ```bash
 mkdir -p ~/autonomy_ws/src
 cd ~/autonomy_ws/src
-git clone YOUR_GITHUB_URL einride-hackathon
-cd einride-hackathon
+git clone YOUR_GITHUB_URL einride-stack
+cd einride-stack
 ./tools/fetch_dependencies.sh
 
 cd ~/autonomy_ws
 source /opt/ros/jazzy/setup.bash
 export PYTHONNOUSERSITE=1
 rosdep install --from-paths \
-  src/einride-hackathon/interfaces \
-  src/einride-hackathon/slam \
-  src/einride-hackathon/planning \
-  src/einride-hackathon/control \
-  src/einride-hackathon/control_docking \
-  src/einride-hackathon/control_mppi_critic \
-  src/einride-hackathon/perception \
-  src/einride-hackathon/vendor_src/m-explore-ros2/explore \
-  src/einride-hackathon/vendor_src/m-explore-ros2/explore_lite_msgs \
+  src/einride-stack/interfaces \
+  src/einride-stack/slam \
+  src/einride-stack/planning \
+  src/einride-stack/control \
+  src/einride-stack/control_docking \
+  src/einride-stack/control_mppi_critic \
+  src/einride-stack/perception \
+  src/einride-stack/vendor_src/m-explore-ros2/explore \
+  src/einride-stack/vendor_src/m-explore-ros2/explore_lite_msgs \
   --ignore-src -r -y
 colcon build --symlink-install \
-  --base-paths src/einride-hackathon \
+  --base-paths src/einride-stack \
   --packages-up-to interfaces slam planning control \
     control_docking control_mppi_critic perception explore_lite
 ```
