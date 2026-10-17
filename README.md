@@ -4,7 +4,7 @@ This repository contains ROS 2 software for an autonomous mobile-robot project.
 It combines mapping and localization, mission planning,
 camera/lidar perception, Nav2 control, docking, collision-safe escape behavior,
 shared ROS interfaces, and a multi-robot evaluation harness.
-
+ 
 ## Demo
 
 <p align="center">
