@@ -20,6 +20,12 @@ The export is intentionally source-only. It contains no robot-vendor source,
 mission-server source, credentials, trained models, maps, ROS bags, experiment
 recordings, build products, or internal development logs.
 
+## Robot detector
+
+![Robot detector shown in different camera views](robot-detector.gif)
+
+Robot detection with YOLO11, exported to TensorRT FP16 and running at about 5.8 ms per frame on the robot's Jetson Orin Nano. Detections, combined with stereo depth, feed three particle filters that estimate each of the other robots' position, speed and likely destination dock; the planner uses those predictions to route around them.
+
 ## Packages
 
 | Package | Purpose |
